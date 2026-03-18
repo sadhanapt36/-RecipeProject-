@@ -64,7 +64,7 @@ Rather than using the raw protein PDV value which is not that valuable on its ow
 ```
 prop_protein = (protein_PDV / 100 × 50g × 4 cal/g) / calories
 ```
-The [FDA] (https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels#:~:text=Table_title:%20Reference%20Guide:%20Daily%20Values%20for%20Nutrients,Riboflavin%20%7C%20Current%20Daily%20Value:%201.3mg%20%7C) defines 50g as the 100% daily value for protein, and the [USDA] (https://www.nal.usda.gov/programs/fnic) says that protein contains 4 calories per gram. This will allow us to compare protein content because by using the PDV value, we wouldn't know the different between a recipe that is 50% or 5% protein.
+The [FDA](https://www.fda.gov/food/nutrition-facts-label/daily-value-nutrition-and-supplement-facts-labels#:~:text=Table_title:%20Reference%20Guide:%20Daily%20Values%20for%20Nutrients,Riboflavin%20%7C%20Current%20Daily%20Value:%201.3mg%20%7C) defines 50g as the 100% daily value for protein, and the [USDA](https://www.nal.usda.gov/programs/fnic) says that protein contains 4 calories per gram. This will allow us to compare protein content because by using the PDV value, we wouldn't know the different between a recipe that is 50% or 5% protein.
 
 **7. Added `is_high_protein` to dataframe**
 I created a boolean column that checks whether a recipe's `prop_protein` is above it median. I didn't use the mean as the splitting feature due to the heavy skew. This new column was essential in comparing recipes with high and low protein in the hypothesis testing and modeling.
