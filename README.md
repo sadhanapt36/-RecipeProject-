@@ -29,6 +29,7 @@ The first dataset, `recipes`, contains **83,782 rows** , which means that there 
 
 
 The second dataset, `interactions`, contains **731,927 rows**, with one per user review and the following relevant columns:
+
 | Column | Description |
 |---|---|
 | `recipe_id` | Recipe ID |
@@ -156,7 +157,7 @@ In order to make the missingness of `reviews` **Missing at Random (MAR)**, some 
 
 Next, I looked at the missingness of `avg_rating` in the dataset. The rows that had `avg_rating` missing in the datafram `recipes_unique` are the recipes that were never reviewed in the first place (which is not considered trivial). I tested whether this missingness depends on `prop_protein` and `sodium (PDV)` and got different results.
 
- 
+# add a graph to show missingness by group
 **Does the missingness of `avg_ratings` (for unique recipes) depend on `prop_protein`?**
 
 *Null Hypothesis:* The missingness of avg_ratings does not depend on prop_protein (the average proportion of calories from protein is the same for recipes with and without ratings).
@@ -190,6 +191,7 @@ Similar to above, I ran a permutation test and shuffled the missingness label of
 
 Through this permutation test, I got a p-value of **0.69** which is > 0.05. Therefore, at my chosen siginficance level, 0.05, I  **fail to reject the null hypothesis**. The missingness of `avg_rating` does NOT depend on `prop_protein`. This result intuitively makes sense because a whether a recipe is salty or not has no influence on someone choosing to leave a rating, especially considering that people have very different preferences when it comes to their salting.
 
+
 ## Hypothesis Testing
 
 When I began this project, my initial question was do people rate high-protein recipes differently than low-protein ones? In simpler terms, does adding more protein to a recipe affect the taste (proxy is rating)? To answer this question, I ran a permutation test with the following hypotheses, test statistic, and signficance level:
@@ -214,19 +216,137 @@ As seen on the graph, the simulated differences are to the far left of the graph
  
 **p-value:** 0.0
  
- 
 ### Conclusion
 
 Since the **p-value: 0.0** is < 0.05, the significance level, I **reject the null hypothesis.** The hypothesis test concludes that high and low protein recipes are have different `avg_rating`. However, its important to point out that the observed difference in means is tiny, approximately 0.03 stars. Given the size of this sample, this result was statistically significiant, but practically speaking, a 0.03 difference is next to nothing. 
 
 At the end of the day, hypothesis tests are NOT definitive. We cannot conclude solely from this test alone that protein content (high or low) is what *causes* lower or higher ratings. This hypothesis test largely oversimpilifies this situation.
+
+
+## Framing a Prediction Problem 
+
+Based on the analysis so far, something that stood out to me beyond the main focus of `avg_rating` is that high_protein recipes take almost 20 minutes more to prepare and involve more steps & ingredients (+1 on average) that low-protein recipes. So when choosing a prediction problem, I wanted to see if based on this data, we can predict how long a recipe takes to make based on what we know about it prior to cooking (recipe information we have).
+
+*Prediction Problem:* Predict the cooking time of a recipe.
+
+*Problem Type:* Regression, since `minutes` is a continuous numerical variable.
+
+*Response Variable:* `minutes`, and I chose this because this is one of the most important factors a user may consider in choosing to move forward with a recipe. It also goes back to my initial interest in the topic of the time taken on certain recipes, making them less (or more) accessible to college students trying to eat helathier.
+
+*Evaluation Metric:* BOTH RMSE (root mean squared error) and R²
+- RMSE tells us how many minutes off our predictions are on average, so for example, a model with an RMSE of 20 minutes is better than one with a RMSE of 90 minutes.
+- R² tells us what proportion of the variance in cook time our model explains. 
+- I chose to use both since RMSE and R² give very different pictures of the model. The RMSE on its own doesn't tell us if the model is better than just prediction the mean every single time, and that's where R² comes in. 
+
+**Outlier Removal:**
+
+Before builing the model, I looked at the distribution of minutes across ALL recipes, the distribution looks like this:
+
+<iframe src="assets/minutes_before_outliers.html" width="800" height="500" frameborder="0"></iframe>
+
+As you can see, the distribution is extremeley right-skewed, only a tiny group of recipes have cook times of hundred or even thousands of minutes (up till 1400 minutes/24 hours). This probabaly has to do with edge cases such as overnight marination or error in the data entry. Keeping the outliers would make it very difficult to develop a model that can meaningfully learn patterns, since the extreme values would have a large impact on the error calculation and the skew predictions.
+
+In order to address this, I removed outliers using the IQR method. This invloved filtering out any recipes where cooking time: `minutes` was lower that Q1-1.5*IQR or higher than Q3+1.3*IQR. The distribution after is show below:
+
+<iframe src="assets/minutes_after_outliers.html" width="800" height="500" frameborder="0"></iframe>
+
+As seen through the graph, the distribution after the outlier removal, is more within reason. This will allow the model to focus on more day-to-day recipes rathern than multi-day cooking projects. This change had a dramatic effect on the baseline model's performance, decrease RMSE from approximately 90 minutes to approximately 25 minutes.
+
+**Information Known at Time of Prediction:**
+All the features that I used in the model are features that come from recipes_unique or are derived from its columns. The features known at time of prediction include: `prop_protein`, `calories`, `n_steps`, `n_ingredients`, `complexity`, `calories_per_step`. All of these features are available (or can be calculated) before a user has cooked or rated a recipe. I did not use `avg_rating` or `rating` in the model because those are known once the users have interacted with the recipe in some shape or form. Finally, `minutes` is not a features that is used in the prediction, although known since it is the response variable and the one that we are predicting! 
+
+
+## Baseline Model
+
+For the baseline mode, I used a **Linear Regression** model with two quantitative features: `prop_protein` and `calories`. 
+
+**Features:**
+
+- `prop_protein`, a quantitative variable that I passed through as-is
+The proportion of calories from protein might contribute to a higher cooking time because of the type of food it represents. Meats, for example, will take longer to cook than a noodles that cook over the stove. 
+- `calories`, a quantitative variable that I passed through as-is
+A recipe with higher calories may take more time to cook since, it has more going on. This is a loose conjecture. However, in EDA we saw that `calories` has many high outliers, so I addressed that in the final model.
+- NO categorical features were used
+
+Based on this model, I calculated the following evaluation metrics:
+- **Train R²:** 0.0381
+- **Test R²:** 0.0379
+- **RMSE:** 24.92 min
+ 
+With these evaluation metrics, I am able to say that the baseline model explains only 3.8% of the variance in cook time. Honestly, this is not a great result, but definitely expected since I only used two features without an transformations being done on them. What stands out to me is the fact that the training and testing R² is almost identical. This is a good sign because it means that the model is not overfitting the training data, its just overfitting the the all of the data (training and testing). This just tells me that there is a lot of room for growth.
  
 
+## Final Model
+
+For the final model, I settled on a **RandomForestRegressor** and engineered two new features that are able to hone in on the complexity of a recipe, an aspect completely missed in the baseline. I implemented all of the steps in a single pipepline and used the same `X_train` and `X_test` splits as the baseline for sake of comparision.
+
+**Features from baseline:**
+
+1. `prop_protein` (quantitative), transformed with **QuantileTransformer**. As seen in the univariate analysis, `prop_protein` is a right_skewed distribution, so this transformation turns it into a uniform distribution. I chose to use `prop_protein` instead of `is_high_protein` (which is boolean) because I would have to one-hot encode it, which would reduce the dimenstionality of the feature by just splitting protein into two buckets. For example, recipes with 0.58 `prop_protein` and 0.94 `prop_protein` would be in the same bucket of "high protein".
+
+2. `calories` (quantitative), transformed with **RobustScaler**. As mentioned in the baseline section, `calories` is a feature with many outliers, by using RobustScaler, I standardize `calories` by the IQR, making it robust to outliers and extreme values. Even though `calories_per_step` (introduced below) also has `calories` in its calculation, I decided to keep `calories` as its own feature because they are two seperate features, fundamentally. `calories` on its own shows the total energy that a recipe can create, while `calories_per_step` breaks down how that energy is distributed across the cooking process. Using both of these features will assist the model in knowing the difference between a high-calorie easy to make dish and a high-calorie hard to make dish.
+ 
+**New engineered features:**
+ 
+1. `calories_per_step` = `calories / n_steps` 
+*(quantitative, transformed using StandardScaler)*
+ 
+This new feature was fundamental to the new model because it shows the calories/effort (proxy of steps). Something this feture captures is that lower calories per step might mean a multi-component dish, something `calories` or `n_steps` on their own capture but is essential in predicting cooking time. 
+ 
+2. `complexity` = `n_steps × n_ingredients` 
+*(quantitative, transformed using StandardScaler)*
+ 
+This new features show the interaction between the two aspects of a complex recipe: high ingredients and high number of steps (`n_ingredients`, `n_steps`). For example, a dish with 10 steps and 3 ingredients is completely different from one with 10 steps and 10 ingredients. The seocnd dish requires a lot more time and prep, a conclusion you can't come to just by looking at `n_ingredients` or `n_steps` alone. 
+ 
+**Hyperparameter tuning:**
+
+In order to tune the RandomForestRegressor, I chose two hyperparameters worth tuning.
+
+1. `max_depth`: Considering that decision trees are prone to overfitting, limiting the depth allows the model to generalize to data outside of the training data.
+
+2. `n_estimators`: Adding more trees reduces variance by averaging the predictions across more trees improves the predictions accuracy overall.
+
+I tuned these hyperparameters using `GridSearchCV` with a 5-fold cross-validation and used R² as the scoring metric to find the optimal combination and found find the optimal parameters: `max_depth = 10` and `n_estimators = 150`.
+ 
+**Evaluation Metrics:**
+
+Based on the final model, I calculated the following evaluation metrics:
+- **Baseline Test R²:** 0.0379
+- **Final Test R²:** 0.2769
+- **Baseline RMSE:** 24.92 min
+- **Final RMSE:** 21.61 min
+
+The final model's Test R² improved from 0.038 to 0.277 which means that the R² increased by almost 7 times and the RMSE decreased by approzimatley 3.5 minutes. The final training R² of 0.352 has some overfitting in comparision to the test R² of 0.2769, but it is understandable due to how complex the Random Forest is. The addition of the complexity based features gave more to the model than just knowing how protein-dense a recipe is. That being said, the model still has room for growth and could definitely benefit from incorporating text analysis of the recipe itself which would give us a clearer picture of how complex it is and potentially explain why high-protein recipes consistently demand more time and effort from the cook (a trend that has been seen consistently).
 
 
+## Fairness Analysis
 
+For the fairness analysis, keep to the theme of my investigation, I split the recipes into two groups: **high protein (is_high_protein = True)** and **low protein (is_high_protein = False)**. Since I built a regression model, it is best to evaluate using *RMSE parity*, does my model predict cook time (`minutes`) equally well for high and low protein recipes. A model that does worse for one group would be an "unfair" model and would give less reliable cook times to people who are looking for protein-heavy recipes.
+ 
+- **Groups:** high protein (is_high_protein=True) vs low protein (is_high_protein=False) --> used median to split since prop_protein has many outliers
 
+- **Null Hypothesis:** My model is fair, the RMSE for high-protein and low-protein recipes is roughly equal, and any differences are due to random chance.
 
+- **Alternative Hypothesis:** My model is unfair, the RMSE for high_protein recipes is higher than it is for low_protein recipes. 
 
+- **Test Statistic:** Difference in RMSE (high protein - low protein)
 
+- **Significant Level:** 0.05
+ 
+
+I ran a permutation test and shuffled `is_high_protein` labels 1000 times, and compared the differences to the observed statistic. The observed statistic is shown by the red vertical line below. 
+ 
+
+<iframe src="assets/fairness_analysis.html" width="800" height="500" frameborder="0"></iframe>
+ 
+
+The observed statistic is indicated by the red vertical line. The RMSE for high-protein recipes was 21.9412 minutes and for low-protein recipes was 21.3534 minutes, giving an observed difference of approximately 0.58 minutes.
+ 
+**p-value:** 0.022
+
+Since the p-value is **less than 0.05**, we **reject the null hypothesis**. The permutation test suggests that the final model is unfair, that it predicts cook time less accurately for high-protein recipes than for low-protein recipes. That being said, it is important to point out that a difference (in the observed statistic) of ~ 0.058 is basically negligible. This has come up throughout, but due to the sheer size of the datast, the tests are able to detect minute differences as stastically signficiant. While I am not dismissing the results of this fairness analysis, I do think we should note that the impact of this difference is next to nothing since the model performs almost exactly the ame on both groups. 
+
+ 
+
+ 
  
