@@ -126,13 +126,3 @@ This graph shows how similar the `avg_rating` distrbutions are between the low a
 
 This density heatmap was the most helpful for me in seeing the idea in the box plot, but more closeup. It seems based on this that the highest proportion of recipes are in the 5 stars and low protein section, and the density decreases (the blue lightens) as the proportion of protein increases. There is no clear trend (up or down) in the ratings as `prop_protein` grows which just basically affirmed my idea that there is a weak relationshop between `prop_protein` and `avg_rating`. 
  
-
-
-
-
-
-
-
-
-
- 
