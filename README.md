@@ -142,6 +142,55 @@ This table is interesting because it really shows the differences between high a
 What was also helpful was that this aggregate gave me a glimpse into what was coming in the hypothesis testing section.
 
 
+## Assessment of Missingness
+
+### MNAR Analysis
+
+While there were a couple of columns in the original merged dataset (`recipes_all`) that had a high number of missing values, for the purposes of this section of the project, I chose to focus on the missingness of `reviews` from the `recipes_all` dataframe (has a row for each review), in recipes_unique I dropped this column as it was not directly applicable to the questions I hoped to explore.
+
+Based on what we've seen so far, I believe that the `review` column is **Missing Not at Random (MNAR)**. This closely mirrors my experience with yelp, so I'll use that as an example. When I have a decent, but not excellent or not horrible experience at a restaurant, I'm not likely to go leave a review on Yelp. Similar logic applies here. If someone cooks a recipe and the result is as expected or not that impressive or not dissapointing, then they'll probably not leave a whole review. The missing reviews aren't tried to any other variable, they are more likely to be connected to mediocre, non-standout experiences. This means that missingness is tied to the value that should be recorded (but isn't): mediocrity. That is what makes `reviews` MNAR.
+
+In order to make the missingness of `reviews` **Missing at Random (MAR)**, some additional information that would be helpful is whether or not the user actually cooked the recipe or if they just viewed it. This could be accomplished with a "I made it" button that users can click. By seperating users who viewed the page but didn't cook the recipe and cooked the recipe but didn't leave a review, then we might be able to explain the missingness through a variable like the cooking frequency. 
+
+### Missingness Dependency
+
+Next, I looked at the missingness of `avg_rating` in the dataset. The rows that had `avg_rating` missing in the datafram `recipes_unique` are the recipes that were never reviewed in the first place (which is not considered trivial). I tested whether this missingness depends on `prop_protein` and `sodium (PDV)` and got different results.
+
+ 
+**Does the missingness of `avg_ratings` (for unique recipes) depend on `prop_protein`?**
+
+Null Hypothesis: The missingness of avg_ratings does not depend on prop_protein (the average proportion of calories from protein is the same for recipes with and without ratings).
+
+Alternate Hypothesis: The missingness of avg_ratings does depend on prop_protein (the average proportion of calories from protein is different for recipes with and without ratings).
+
+Test Statistic: The absolute difference in mean prop_protein between the group with missing avg_rating and the group without missing avg_rating.
+
+Significance Level: 0.05
+
+I ran a permutation test and shuffled the missingness label of `avg_rating` that I named `avg_rating_missing`. I ran the test 1000 times and collected 1000 simulated differences in means. The **observed statistic = -0.0109** is represented by the red line on the graph below.
+
+<iframe src="assets/missingness_perm_prop_protein.html" width="800" height="500" frameborder="0"></iframe>
+
+Through this permutation test, I got a p-value of **0.0** which is < 0.05. Therefore, at my chosen siginficance level, 0.05, I can **reject the null hypothesis**. The missingness of `avg_rating` does depend on `prop_protein`. This result shows that recipes that lack a rating seem to have a slight difference in the protein proportion than those that do have a rating. this suggests that specfic types of recipes, potentially those that are super niche or unfamiliar, are higher in protein and not very likely to get users to post reviews.
+
+**Does the missingness of avg_ratings (for unique recipes) depend on sodium (PDV)?**
+
+Null Hypothesis: The missingness of avg_ratings does not depend on sodium (PDV), the average sodium PDV is the same for recipes with and without ratings
+
+Alternate Hypothesis: The missingness of avg_ratings does depend on sodium (PDV), recipes with missing ratings have a different average sodium PDV content than recipes with ratings
+
+Test Statistic: The absolute difference in mean sodium (PDV) between the group with missing avg_rating and the group without missing avg_rating.
+
+Significance Level: 0.05
+
+Similar to above, I ran a permutation test and shuffled the missingness label of `avg_rating` that I named `avg_rating_missing`. I ran the test 1000 times and collected 1000 simulated differences in means. The **observed statistic = -0.0109** is represented by the red line on the graph below. Interestingly enough, the observed statistic is same for this permutation test and the one above!
+
+<iframe src="assets/missingness_perm_sodium.html" width="800" height="500" frameborder="0"></iframe>
+
+Through this permutation test, I got a p-value of **0.69** which is > 0.05. Therefore, at my chosen siginficance level, 0.05, I  **fail to reject the null hypothesis**. The missingness of `avg_rating` does NOT depend on `prop_protein`. This result intuitively makes sense because a whether a recipe is salty or not has no influence on someone choosing to leave a rating, especially considering that people have very different preferences when it comes to their salting.
+
+
+
 
 
 
