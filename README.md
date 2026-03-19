@@ -4,11 +4,11 @@
 
 **By Sadhana Tadepalli**
 
-### Overview
+## Overview
 
 This is a data science project conducted at UCSD, with a focus on exploring the relationship between the proportion of protein in a recipe, the time it takes to cook it, and the rating over different recipes. 
 
-### Introduction
+## Introduction
 
 Even though food is a central part of our daily life, for many college students, eating well is a luxury that comes from having extra hours in the day (hours they often don't have). Protein-rich meals such as cooking meats take more time, more steps, and more cooking knowledge than instant meals that are extremeley accessible. As a result, most students default to carbohydrate-heavy meals that are easy and fast to make, sacrificing nutrition for convenience in the process
 I was able to acknolwedge that this was something I personally struggle with when my mom and I began talking about improving our diets. Women in my family are more prone to certain health condtions as they age, so we kept circling back to how increasing protein intake should becone a priority. As a self-proclaimed foodie that naturally gravitates toward Indian cuisine and other meals that tend to be carbohydrate-heavy than protein-heavy, **I found myself asking, do protein-packed recipes actually taste good? And do we scarifice flavor by prioritizing protein?**
@@ -41,9 +41,9 @@ These allow us to compare high and low protein recipes in a standardized way
 
 My analysis is centered around the question of **does prioritizing protein come at a cost to taste?** To answer this question, I looked into whether high-protein recipes are rated diffferently (higher/lower) than low_protein ones, assess whether rating missingness (from the data) depends on the proportion of protein in the recipe, and finally, built a model to predict the cook time of unique recipes, considering that high-protein recipes might involve more cooking time. 
 
-### Data Cleaning and Exploratory Data Analysis
+## Data Cleaning and Exploratory Data Analysis
 
-#### Data Cleaning
+### Data Cleaning
 
 Before moving forward with any of the analysis I planned for, I did the following to clean the data:
 
@@ -98,7 +98,7 @@ Here is how the first couple rows of the cleaned version of the merged dataframe
 | millionaire pound cake               | 286009 |       120 | 2008-02-12 00:00:00 |         7 |               7 |        5 |            5 |      878.3 |              20 |                   123 |             13 | False             |           0.05 |
 | 2000 meatloaf                        | 475785 |        90 | 2012-03-06 00:00:00 |        17 |              13 |        5 |            5 |      267   |              29 |                    48 |             12 | True              |           0.22 |
 
-#### Univariate Analysis
+### Univariate Analysis
  
 **Distribution of `prop_protein`**
  
@@ -112,7 +112,7 @@ Based on this graph, its clear that the the distribution of 'prop_protein' is ri
 
 Based on this graph, it is clear that the distribution of `avg_rating` is very heavily left-skewed with most of the recipes rated somewhere between 4-5 stars. This split in high-rated and low-rated recipes is important in the analysis down the line. Due to the sheer number of recipes in the dataset, the small differences are still important.
  
-#### Bivariate Analysis
+### Bivariate Analysis
  
 **Average Rating compared Protein Level (High vs. Low)**
  
