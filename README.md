@@ -188,7 +188,7 @@ Similar to above, I ran a permutation test and shuffled the missingness label of
 
 <iframe src="assets/missingness_perm_sodium.html" width="800" height="500" frameborder="0"></iframe>
 
-Through this permutation test, I got a p-value of **0.69** which is > 0.05. Therefore, at my chosen siginficance level, 0.05, I  **fail to reject the null hypothesis**. The missingness of `avg_rating` does NOT depend on `sodium (PDV)`. This result intuitively makes sense because a whether a recipe is salty or not has no influence on someone choosing to leave a rating, especially considering that people have very different preferences when it comes to their salting.
+Through this permutation test, I got a p-value of **0.67** which is > 0.05. Therefore, at my chosen siginficance level, 0.05, I  **fail to reject the null hypothesis**. The missingness of `avg_rating` does NOT depend on `sodium (PDV)`. This result intuitively makes sense because a whether a recipe is salty or not has no influence on someone choosing to leave a rating, especially considering that people have very different preferences when it comes to their salting.
 
 
 ## Hypothesis Testing
@@ -309,12 +309,12 @@ I tuned these hyperparameters using `GridSearchCV` with a 5-fold cross-validatio
 **Evaluation Metrics:**
 
 Based on the final model, I calculated the following evaluation metrics:
-- **Baseline Test R²:** 0.0379
-- **Final Test R²:** 0.2769
+- **Baseline Test R²:** 0.0381
+- **Final Test R²:** 0.2746
 - **Baseline RMSE:** 24.92 min
-- **Final RMSE:** 21.61 min
+- **Final RMSE:** 21.64 min
 
-The final model's Test R² improved from 0.038 to 0.277 which means that the R² increased by almost 7 times and the RMSE decreased by approximately 3.5 minutes. The final training R² of 0.352 has some overfitting in comparision to the test R² of 0.2769, but it is understandable due to how complex the Random Forest is. The addition of the complexity based features gave more to the model than just knowing how protein-dense a recipe is. That being said, the model still has room for growth and could definitely benefit from incorporating text analysis of the recipe itself which would give us a clearer picture of how complex it is and potentially explain why high-protein recipes consistently demand more time and effort from the cook (a trend that has been seen consistently).
+The final model's Test R² improved from 0.038 to 0.274 which means that the R² increased by almost 7 times and the RMSE decreased by approximately 3.5 minutes. The final training R² of 0.352 has some overfitting in comparision to the test R² of 0.2746, but it is understandable due to how complex the Random Forest is. The addition of the complexity based features gave more to the model than just knowing how protein-dense a recipe is. That being said, the model still has room for growth and could definitely benefit from incorporating text analysis of the recipe itself which would give us a clearer picture of how complex it is and potentially explain why high-protein recipes consistently demand more time and effort from the cook (a trend that has been seen consistently).
 
 
 ## Fairness Analysis
@@ -329,7 +329,7 @@ For the fairness analysis, keep to the theme of my investigation, I split the re
 
 - **Test Statistic:** Difference in RMSE (high protein - low protein)
 
-- **Significant Level:** 0.05
+- **Significance Level:** 0.05
  
 
 I ran a permutation test and shuffled `is_high_protein` labels 1000 times, and compared the differences to the observed statistic. The observed statistic is shown by the red vertical line below. 
@@ -338,9 +338,9 @@ I ran a permutation test and shuffled `is_high_protein` labels 1000 times, and c
 <iframe src="assets/fairness_analysis.html" width="800" height="500" frameborder="0"></iframe>
  
 
-The observed statistic is indicated by the red vertical line. The RMSE for high-protein recipes was 21.9412 minutes and for low-protein recipes was 21.3534 minutes, giving an observed difference of approximately 0.58 minutes.
+The observed statistic is indicated by the red vertical line. The RMSE for high-protein recipes was 21.9413 minutes and for low-protein recipes was 21.3537 minutes, giving an observed difference of approximately 0.58 minutes.
  
-**p-value:** 0.022
+**p-value:** 0.036
 
 Since the p-value is **less than 0.05**, we **reject the null hypothesis**. The permutation test suggests that the final model is unfair, that it predicts cook time less accurately for high-protein recipes than for low-protein recipes. That being said, it is important to point out that a difference (in the observed statistic) of ~ 0.58 is basically negligible. This has come up throughout, but due to the sheer size of the datast, the tests are able to detect minute differences as statistically significiant. While I am not dismissing the results of this fairness analysis, I do think we should note that the impact of this difference is next to nothing since the model performs almost exactly the same on both groups. 
 
