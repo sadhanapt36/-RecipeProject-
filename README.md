@@ -88,6 +88,16 @@ After merging, the combined dataframe had 25 columns. I retained only those rele
 
 Till now, I had been using the merged dataframe, `recipes_all` which contains multiple rows per recipe since some recipes have multiple ratings. For example, a popular recipe would appear many times. Most analysis using `recipes_all` would be skewed by said popular recipes. Which is why I created `recipes_unique` by dropping the duplicates of recipe ID. `recipes_unique` is the main dataframe I used moving forward, especially considering that most of my analysis was on a recipe-level. In this dataframe, each row has one unqique recipe, has its`avg_rating` and all of the other columns mentioned above.
 
+Here is how the first couple rows of the cleaned version of the merged dataframe, `recipes_unique` looks, it has 82983 rows (82983 unique recipes) and 14 columns:
+
+| name                                 |     id |   minutes | submitted           |   n_steps |   n_ingredients |   rating |   avg_rating |   calories |   protein (PDV) |   saturated_fat (PDV) |   sodium (PDV) | is_high_protein   |   prop_protein |
+|:-------------------------------------|-------:|----------:|:--------------------|----------:|----------------:|---------:|-------------:|-----------:|----------------:|----------------------:|---------------:|:------------------|---------------:|
+| 1 brownies in the world    best ever | 333281 |        40 | 2008-10-27 00:00:00 |        10 |               9 |        4 |            4 |      138.4 |               3 |                    19 |              3 | False             |           0.04 |
+| 1 in canada chocolate chip cookies   | 453467 |        45 | 2011-04-11 00:00:00 |        12 |              11 |        5 |            5 |      595.1 |              13 |                    51 |             22 | False             |           0.04 |
+| 412 broccoli casserole               | 306168 |        40 | 2008-05-30 00:00:00 |         6 |               9 |        5 |            5 |      194.8 |              22 |                    36 |             32 | True              |           0.23 |
+| millionaire pound cake               | 286009 |       120 | 2008-02-12 00:00:00 |         7 |               7 |        5 |            5 |      878.3 |              20 |                   123 |             13 | False             |           0.05 |
+| 2000 meatloaf                        | 475785 |        90 | 2012-03-06 00:00:00 |        17 |              13 |        5 |            5 |      267   |              29 |                    48 |             12 | True              |           0.22 |
+
 #### Univariate Analysis
  
 
