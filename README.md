@@ -2,7 +2,7 @@
 
 ## Investigation on the Relationship between Protein, Cooking Time, and Ratings of Recipes
 
-**By Sadhana Tadepalli**
+**By: Sadhana Tadepalli**
 
 ## Overview
 
@@ -159,13 +159,13 @@ Next, I looked at the missingness of `avg_rating` in the dataset. The rows that 
  
 **Does the missingness of `avg_ratings` (for unique recipes) depend on `prop_protein`?**
 
-Null Hypothesis: The missingness of avg_ratings does not depend on prop_protein (the average proportion of calories from protein is the same for recipes with and without ratings).
+*Null Hypothesis:* The missingness of avg_ratings does not depend on prop_protein (the average proportion of calories from protein is the same for recipes with and without ratings).
 
-Alternate Hypothesis: The missingness of avg_ratings does depend on prop_protein (the average proportion of calories from protein is different for recipes with and without ratings).
+*Alternate Hypothesis:* The missingness of avg_ratings does depend on prop_protein (the average proportion of calories from protein is different for recipes with and without ratings).
 
-Test Statistic: The absolute difference in mean prop_protein between the group with missing avg_rating and the group without missing avg_rating.
+*Test Statistic:* The absolute difference in mean prop_protein between the group with missing avg_rating and the group without missing avg_rating.
 
-Significance Level: 0.05
+*Significance Level:* 0.05
 
 I ran a permutation test and shuffled the missingness label of `avg_rating` that I named `avg_rating_missing`. I ran the test 1000 times and collected 1000 simulated differences in means. The **observed statistic = -0.0109** is represented by the red line on the graph below.
 
@@ -173,21 +173,55 @@ I ran a permutation test and shuffled the missingness label of `avg_rating` that
 
 Through this permutation test, I got a p-value of **0.0** which is < 0.05. Therefore, at my chosen siginficance level, 0.05, I can **reject the null hypothesis**. The missingness of `avg_rating` does depend on `prop_protein`. This result shows that recipes that lack a rating seem to have a slight difference in the protein proportion than those that do have a rating. this suggests that specfic types of recipes, potentially those that are super niche or unfamiliar, are higher in protein and not very likely to get users to post reviews.
 
+
 **Does the missingness of avg_ratings (for unique recipes) depend on sodium (PDV)?**
 
-Null Hypothesis: The missingness of avg_ratings does not depend on sodium (PDV), the average sodium PDV is the same for recipes with and without ratings
+*Null Hypothesis:* The missingness of avg_ratings does not depend on sodium (PDV), the average sodium PDV is the same for recipes with and without ratings
 
-Alternate Hypothesis: The missingness of avg_ratings does depend on sodium (PDV), recipes with missing ratings have a different average sodium PDV content than recipes with ratings
+*Alternate Hypothesis:* The missingness of avg_ratings does depend on sodium (PDV), recipes with missing ratings have a different average sodium PDV content than recipes with ratings
 
-Test Statistic: The absolute difference in mean sodium (PDV) between the group with missing avg_rating and the group without missing avg_rating.
+*Test Statistic:* The absolute difference in mean sodium (PDV) between the group with missing avg_rating and the group without missing avg_rating.
 
-Significance Level: 0.05
+*Significance Level:* 0.05
 
 Similar to above, I ran a permutation test and shuffled the missingness label of `avg_rating` that I named `avg_rating_missing`. I ran the test 1000 times and collected 1000 simulated differences in means. The **observed statistic = -0.0109** is represented by the red line on the graph below. Interestingly enough, the observed statistic is same for this permutation test and the one above!
 
 <iframe src="assets/missingness_perm_sodium.html" width="800" height="500" frameborder="0"></iframe>
 
 Through this permutation test, I got a p-value of **0.69** which is > 0.05. Therefore, at my chosen siginficance level, 0.05, I  **fail to reject the null hypothesis**. The missingness of `avg_rating` does NOT depend on `prop_protein`. This result intuitively makes sense because a whether a recipe is salty or not has no influence on someone choosing to leave a rating, especially considering that people have very different preferences when it comes to their salting.
+
+## Hypothesis Testing
+
+When I began this project, my initial question was do people rate high-protein recipes differently than low-protein ones? In simpler terms, does adding more protein to a recipe affect the taste (proxy is rating)? To answer this question, I ran a permutation test with the following hypotheses, test statistic, and signficance level:
+
+*Null Hypothesis*: Recipes with above-average protein content have the same average rating as recipes with below-average protein content.
+
+*Alternative Hypothesis*: Recipes with above-average protein content have a different average rating than recipes with below-average protein content.
+
+*Test Statistic*: Absolute difference in group means; abs(mean rating of high-protein recipes − mean rating of low-protein recipes)
+
+*Significance Level*: 0.05
+
+I chose a permutation test to answer this question because we aren't assumping any population distribution, we are just checking if the ratings of high_protein recipes and low_protein recipes seem to be from the same distribution. I used `is_high_protein` as the grouping variable. 
+
+I chose the **absolute difference in means** as my test statistic, because I am not looking for a directional difference, my hypothesis is two sided, I am open to either: high-protein recipes are rated higher or lower, or vice versa for low-protein recipes.
+
+To run the permutation test, I shuffled the labels of `is_high_protein` 1000 times to generate test statistics to compare to the observed statistic. The **observed statistic = 0.0333** and is shown on the graph below by the red line.
+ 
+<iframe src="assets/hypothesis_test.html" width="800" height="500" frameborder="0"></iframe>
+ 
+As seen on the graph, the simulated differences are to the far left of the graph while the observed difference is to the far right, which means that a difference this high is pretty unlikely under the null.
+ 
+**p-value:** 0.0
+ 
+ 
+### Conclusion
+
+Since the **p-value: 0.0** is < 0.05, the significance level, I **reject the null hypothesis.** The hypothesis test concludes that high and low protein recipes are have different `avg_rating`. However, its important to point out that the observed difference in means is tiny, approximately 0.03 stars. Given the size of this sample, this result was statistically significiant, but practically speaking, a 0.03 difference is next to nothing. 
+
+At the end of the day, hypothesis tests are NOT definitive. We cannot conclude solely from this test alone that protein content (high or low) is what *causes* lower or higher ratings. This hypothesis test largely oversimpilifies this situation.
+ 
+
 
 
 
