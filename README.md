@@ -100,6 +100,33 @@ Here is how the first couple rows of the cleaned version of the merged dataframe
 
 #### Univariate Analysis
  
+**Distribution of `prop_protein`**
+ 
+<iframe src="assets/univariate_prop_protein.html" width="800" height="500" frameborder="0"></iframe>
+
+Based on this graph, its clear that the the distribution of 'prop_protein' is right-skewed seeing as that most of the recipes get less than 20% of their overall calories from protein. This goes to show that high_protein recipes are a minority in this dataset. 
+ 
+**Distribution of `avg_rating`**
+ 
+<iframe src="assets/univariate_avg_rating.html" width="800" height="500" frameborder="0"></iframe>
+
+Based on this graph, it is clear that the distribution of `avg_rating` is very heavily left-skewed with most of the recipes rated somewhere between 4-5 stars. This split in high-rated and low-rated recipes is important in the analysis down the line. Due to the sheer number of recipes in the dataset, the small differences are still important.
+ 
+#### Bivariate Analysis
+ 
+**Average Rating compared Protein Level (High vs. Low)**
+ 
+<iframe src="assets/bivariate_protein_avgrating.html" width="800" height="500" frameborder="0"></iframe>
+
+This graph shows how similar the `avg_rating` distrbutions are between the low and high protein recipes. Both groups have a median that is approximately 4.5 stars and similar overall spread, hover over the box plots to see the individual breakdowns. This was the earliest signal for me that protein content may not be a strong indicator or rating considering how similar the two different categories look visually.
+
+**Average Rating vs. Proportion of Calories from Protein**
+ 
+<iframe src="assets/bivariate_density.html" width="800" height="500" frameborder="0"></iframe>
+
+This density heatmap was the most helpful for me in seeing the idea in the box plot, but more closeup. It seems based on this that the highest proportion of recipes are in the 5 stars and low protein section, and the density decreases (the blue lightens) as the proportion of protein increases. There is no clear trend (up or down) in the ratings as `prop_protein` grows which just basically affirmed my idea that there is a weak relationshop between `prop_protein` and `avg_rating`. 
+ 
+
 
 
 
