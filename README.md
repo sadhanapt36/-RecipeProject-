@@ -105,6 +105,7 @@ Here is how the first couple rows of the cleaned version of the merged dataframe
 <iframe src="assets/univariate_prop_protein.html" width="800" height="500" frameborder="0"></iframe>
 
 Based on this graph, its clear that the the distribution of 'prop_protein' is right-skewed seeing as that most of the recipes get less than 20% of their overall calories from protein. This goes to show that high_protein recipes are a minority in this dataset. 
+
  
 **Distribution of `avg_rating`**
  
@@ -120,15 +121,25 @@ Based on this graph, it is clear that the distribution of `avg_rating` is very h
 
 This graph shows how similar the `avg_rating` distrbutions are between the low and high protein recipes. Both groups have a median that is approximately 4.5 stars and similar overall spread, hover over the box plots to see the individual breakdowns. This was the earliest signal for me that protein content may not be a strong indicator or rating considering how similar the two different categories look visually.
 
+
 **Average Rating vs. Proportion of Calories from Protein**
  
 <iframe src="assets/bivariate_density.html" width="800" height="500" frameborder="0"></iframe>
 
 This density heatmap was the most helpful for me in seeing the idea in the box plot, but more closeup. It seems based on this that the highest proportion of recipes are in the 5 stars and low protein section, and the density decreases (the blue lightens) as the proportion of protein increases. There is no clear trend (up or down) in the ratings as `prop_protein` grows which just basically affirmed my idea that there is a weak relationshop between `prop_protein` and `avg_rating`.  
- 
 
+### Interesting Aggregates
 
+For this section, I grouped `recipes_unique` by `is_high_protein`, so there is one row for low protein (False) and high protein (True).
 
+| is_high_protein   |   avg_rating |   calories |   minutes |   n_ingredients |   n_steps |   prop_protein |
+|:------------------|-------------:|-----------:|----------:|----------------:|----------:|---------------:|
+| False             |      4.64171 |    389.079 |   52.7651 |         8.47264 |   9.71764 |      0.0604602 |
+| True              |      4.60842 |    428.516 |   71.7539 |         9.96133 |  10.4102  |      0.255176  |
+
+This table is interesting because it really shows the differences between high and low protein that were unclear earlier. High Protein recipes take 20 minutes longer to prepare, 1.5 times more ingredients, and just under 1 more step to make than the low protein recipes. Even here, it is clear that `avg_rating` are almost indeintical by category (4.64 vs. 4.61). This was surprising to me, espeically as someone who came into this project that high-protein recipes require more effort from the cook, but people rate them just as high (so maybe I'm just the lazy one!) as carbohydrate heavy ones. This data showed me, based on this dataset, high-protein recipes don't require giving up good tasting food, but just more of a time and money investment.
+
+What was also helpful was that this aggregate gave me a glimpse into what was coming in the hypothesis testing section.
 
 
 
